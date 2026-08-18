@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.OitavaCerta" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="postSplashScreenTheme">@style/Theme.OitavaCerta.Main</item>
+    </style>
+
+    <style name="Theme.OitavaCerta.Main" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

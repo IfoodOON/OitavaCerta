@@ -1,0 +1,42 @@
+# Claude Code local project settings
+.claude/
+
+# Gradle
+.gradle/
+build/
+*/build/
+*/*/build/
+
+# Local configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+/app/release/
+/app/debug/
+
+# Signing
+*.jks
+*.keystore
+keystore.properties
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin
+.kotlin/
