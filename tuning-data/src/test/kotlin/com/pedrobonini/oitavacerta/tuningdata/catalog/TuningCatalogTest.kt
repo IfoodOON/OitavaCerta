@@ -36,7 +36,7 @@ class TuningCatalogTest {
     @Test
     fun `drop D abaixa somente a 6a corda em relacao ao standard`() {
         val key = InstrumentKey(ACOUSTIC_GUITAR, 6)
-        assertCloseTo(146.83, hzOfString(key, "acoustic6_drop_d", 6))
+        assertCloseTo(73.42, hzOfString(key, "acoustic6_drop_d", 6)) // E2 -> D2
         assertCloseTo(329.63, hzOfString(key, "acoustic6_drop_d", 1))
     }
 

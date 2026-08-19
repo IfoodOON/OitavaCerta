@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.pedrobonini.oitavacerta.settingsdata"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26
