@@ -37,6 +37,7 @@ fun OitavaCertaTheme(
     CompositionLocalProvider(LocalMatrixColors provides matrixColors) {
         MaterialTheme(
             colorScheme = if (isDarkTheme) DarkColors else LightColors,
+            typography = OitavaCertaTypography,
             content = content,
         )
     }
