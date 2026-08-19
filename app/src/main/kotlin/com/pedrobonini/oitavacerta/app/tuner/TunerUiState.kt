@@ -7,15 +7,8 @@ data class TunerUiState(
     val noteLabel: String,
     val hz: Double,
     val cents: Float,
-    val instrumentLabel: String,
 ) {
     companion object {
-        fun idle(instrumentLabel: String = "Guitarra") = TunerUiState(
-            status = TunerStatus.IDLE,
-            noteLabel = "--",
-            hz = 0.0,
-            cents = 0f,
-            instrumentLabel = instrumentLabel,
-        )
+        fun idle() = TunerUiState(status = TunerStatus.IDLE, noteLabel = "--", hz = 0.0, cents = 0f)
     }
 }

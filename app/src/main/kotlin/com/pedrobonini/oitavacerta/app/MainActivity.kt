@@ -3,12 +3,12 @@ package com.pedrobonini.oitavacerta.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pedrobonini.oitavacerta.app.nav.OitavaCertaApp
+import com.pedrobonini.oitavacerta.app.settings.AppSettingsViewModel
 import com.pedrobonini.oitavacerta.uitheme.OitavaCertaTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,13 +16,11 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
-            // TODO(Fase 6): substituir por preferencia persistida em :settings-data.
-            var isDarkTheme by rememberSaveable { mutableStateOf(true) }
+            val appSettingsViewModel: AppSettingsViewModel = viewModel()
+            val isDarkTheme by appSettingsViewModel.isDarkTheme.collectAsState()
+
             OitavaCertaTheme(isDarkTheme = isDarkTheme) {
-                OitavaCertaApp(
-                    isDarkTheme = isDarkTheme,
-                    onToggleTheme = { isDarkTheme = !isDarkTheme },
-                )
+                OitavaCertaApp()
             }
         }
     }

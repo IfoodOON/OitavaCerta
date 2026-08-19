@@ -9,25 +9,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pedrobonini.oitavacerta.app.ads.AdBannerPlaceholder
+import com.pedrobonini.oitavacerta.app.instrumentpicker.InstrumentPickerScreen
 import com.pedrobonini.oitavacerta.app.metronome.MetronomeScreen
+import com.pedrobonini.oitavacerta.app.settings.AppSettingsViewModel
 import com.pedrobonini.oitavacerta.app.settings.SettingsScreen
 import com.pedrobonini.oitavacerta.app.theme.ThemeToggleIcon
 import com.pedrobonini.oitavacerta.app.tuner.TunerScreen
+import com.pedrobonini.oitavacerta.app.tuningpicker.TuningPickerScreen
 
 @Composable
-fun OitavaCertaApp(
-    isDarkTheme: Boolean,
-    onToggleTheme: () -> Unit,
-) {
+fun OitavaCertaApp() {
     val navController = rememberNavController()
+    val appSettingsViewModel: AppSettingsViewModel = viewModel()
+    val isDarkTheme by appSettingsViewModel.isDarkTheme.collectAsState()
+    val currentInstrument by appSettingsViewModel.currentInstrument.collectAsState()
+    val currentTuning by appSettingsViewModel.currentTuning.collectAsState()
 
     Scaffold(
         topBar = {
@@ -38,7 +44,7 @@ fun OitavaCertaApp(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    ThemeToggleIcon(isLightTheme = !isDarkTheme, onToggle = onToggleTheme)
+                    ThemeToggleIcon(isLightTheme = !isDarkTheme, onToggle = appSettingsViewModel::toggleTheme)
                 }
                 AdBannerPlaceholder()
             }
@@ -57,9 +63,41 @@ fun OitavaCertaApp(
                 .fillMaxWidth()
                 .padding(innerPadding),
         ) {
-            composable(Routes.Tuner.route) { TunerScreen() }
+            composable(Routes.Tuner.route) {
+                TunerScreen(
+                    instrument = currentInstrument,
+                    tuning = currentTuning,
+                    onInstrumentSelected = appSettingsViewModel::selectInstrument,
+                )
+            }
             composable(Routes.Metronome.route) { MetronomeScreen() }
-            composable(Routes.Settings.route) { SettingsScreen() }
+            composable(Routes.Settings.route) {
+                SettingsScreen(
+                    instrumentLabel = currentInstrument,
+                    tuningLabel = currentTuning?.displayName ?: "—",
+                    onOpenInstrumentPicker = { navController.navigateSingleTop(Routes.InstrumentPicker.route) },
+                    onOpenTuningPicker = { navController.navigateSingleTop(Routes.TuningPicker.route) },
+                )
+            }
+            composable(Routes.InstrumentPicker.route) {
+                InstrumentPickerScreen(
+                    selected = currentInstrument,
+                    onSelect = { key ->
+                        appSettingsViewModel.selectInstrument(key)
+                        navController.popBackStack()
+                    },
+                )
+            }
+            composable(Routes.TuningPicker.route) {
+                TuningPickerScreen(
+                    instrument = currentInstrument,
+                    selectedPresetId = currentTuning?.id,
+                    onSelect = { preset ->
+                        appSettingsViewModel.selectTuning(preset)
+                        navController.popBackStack()
+                    },
+                )
+            }
         }
     }
 }

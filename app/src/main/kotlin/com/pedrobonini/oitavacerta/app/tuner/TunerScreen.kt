@@ -24,11 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.pedrobonini.oitavacerta.app.instrumentpicker.QuickInstrumentSheet
+import com.pedrobonini.oitavacerta.app.instrumentpicker.displayName
+import com.pedrobonini.oitavacerta.tuningdata.model.InstrumentKey
+import com.pedrobonini.oitavacerta.tuningdata.model.TuningPreset
 import com.pedrobonini.oitavacerta.uitheme.LocalMatrixColors
 import java.util.Locale
 
 @Composable
 fun TunerScreen(
+    instrument: InstrumentKey,
+    tuning: TuningPreset?,
+    onInstrumentSelected: (InstrumentKey) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TunerViewModel = viewModel(),
 ) {
@@ -54,6 +61,12 @@ fun TunerScreen(
         }
         onDispose { viewModel.onScreenStopped() }
     }
+
+    LaunchedEffect(tuning) {
+        viewModel.updateTargetTuning(tuning)
+    }
+
+    var showInstrumentSheet by remember { mutableStateOf(false) }
 
     val matrixColors = LocalMatrixColors.current
     val state by viewModel.uiState.collectAsState()
@@ -104,9 +117,17 @@ fun TunerScreen(
         }
 
         InstrumentChip(
-            instrumentLabel = state.instrumentLabel,
-            onClick = { /* TODO(Fase 4): abrir seletor rápido de instrumento */ },
+            instrumentLabel = instrument.type.displayName(),
+            onClick = { showInstrumentSheet = true },
             modifier = Modifier.padding(top = 24.dp),
+        )
+    }
+
+    if (showInstrumentSheet) {
+        QuickInstrumentSheet(
+            selected = instrument,
+            onSelect = onInstrumentSelected,
+            onDismiss = { showInstrumentSheet = false },
         )
     }
 }
