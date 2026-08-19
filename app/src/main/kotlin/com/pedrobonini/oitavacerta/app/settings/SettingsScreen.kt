@@ -23,25 +23,23 @@ fun SettingsScreen(
     onOpenTuningPicker: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val neutral = LocalMatrixColors.current.neutral
-
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         SettingsRow(
-            title = "Qual instrumento afinar",
-            value = "${instrumentLabel.type.displayName()} · ${instrumentLabel.stringCount} cordas",
+            title = "qual instrumento afinar",
+            value = "${instrumentLabel.type.displayName().lowercase()} · ${instrumentLabel.stringCount} cordas",
             onClick = onOpenInstrumentPicker,
         )
         SettingsRow(
-            title = "Afinação do instrumento",
+            title = "afinação do instrumento",
             value = tuningLabel,
             onClick = onOpenTuningPicker,
         )
-        SettingsRow(title = "Tonalidade linear", value = "Padrão", onClick = {})
-        SettingsRow(title = "Calibrar", value = "440 Hz", onClick = {})
-        SettingsRow(title = "Efeitos sonoros", value = "Ativado", onClick = {})
-        SettingsRow(title = "Idioma", value = "Português (Brasil)", onClick = {})
-        SettingsRow(title = "Privacidade", value = "", onClick = {})
-        SettingsRow(title = "Versão do app", value = "0.1.0", onClick = {})
+        SettingsRow(title = "tonalidade linear", value = "padrão", onClick = {})
+        SettingsRow(title = "calibrar", value = "440 hz", onClick = {})
+        SettingsRow(title = "efeitos sonoros", value = "ativado", onClick = {})
+        SettingsRow(title = "idioma", value = "português (brasil)", onClick = {})
+        SettingsRow(title = "privacidade", value = "", onClick = {})
+        SettingsRow(title = "versão do app", value = "0.1.0", onClick = {})
     }
 }
 

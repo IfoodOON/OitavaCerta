@@ -48,9 +48,15 @@ class TunerViewModel @JvmOverloads constructor(
         } else {
             nearestTargetNoteAndCents(pitch.hz, targetMidiNotes)
         }
-        val noteLabel = MidiNote(midiNote).pitchClass.label
+        val midi = MidiNote(midiNote)
         val status = if (abs(cents) <= IN_TUNE_TOLERANCE_CENTS) TunerStatus.IN_TUNE else TunerStatus.DETECTING
-        return TunerUiState(status = status, noteLabel = noteLabel, hz = pitch.hz, cents = cents.toFloat())
+        return TunerUiState(
+            status = status,
+            noteLabel = midi.pitchClass.label,
+            octave = midi.octave,
+            hz = pitch.hz,
+            cents = cents.toFloat(),
+        )
     }
 
     /** Compara contra as cordas-alvo específicas da afinação atual, não a nota cromática genérica mais próxima. */

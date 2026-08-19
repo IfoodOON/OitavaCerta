@@ -9,13 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pedrobonini.oitavacerta.app.uicommon.MatrixButton
 import com.pedrobonini.oitavacerta.tuningdata.model.InstrumentKey
 import com.pedrobonini.oitavacerta.tuningdata.model.InstrumentType
 import com.pedrobonini.oitavacerta.uitheme.LocalMatrixColors
@@ -31,7 +30,7 @@ fun InstrumentSelectorContent(
         items(InstrumentType.entries) { type ->
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 Text(
-                    text = type.displayName(),
+                    text = type.displayName().lowercase(),
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 18.sp),
                     color = if (selected.type == type) neutral else neutral.copy(alpha = 0.6f),
                 )
@@ -44,18 +43,19 @@ fun InstrumentSelectorContent(
                     ) {
                         type.availableStringCounts.forEach { count ->
                             val isSelected = selected.type == type && selected.stringCount == count
-                            OutlinedButton(onClick = { onSelect(InstrumentKey(type, count)) }) {
-                                Text(
-                                    text = "$count cordas",
-                                    color = if (isSelected) neutral else neutral.copy(alpha = 0.6f),
-                                )
-                            }
+                            MatrixButton(
+                                text = "$count cordas",
+                                color = if (isSelected) neutral else neutral.copy(alpha = 0.6f),
+                                onClick = { onSelect(InstrumentKey(type, count)) },
+                            )
                         }
                     }
                 } else {
-                    TextButton(onClick = { onSelect(InstrumentKey(type, type.defaultStringCount)) }) {
-                        Text(text = "Selecionar", color = neutral)
-                    }
+                    MatrixButton(
+                        text = "selecionar",
+                        onClick = { onSelect(InstrumentKey(type, type.defaultStringCount)) },
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
                 }
             }
             HorizontalDivider(color = neutral.copy(alpha = 0.2f))
