@@ -1,5 +1,9 @@
 package com.pedrobonini.oitavacerta.app.tuner
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,35 +12,51 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pedrobonini.oitavacerta.uitheme.LocalMatrixColors
 import java.util.Locale
 
-private enum class TunerStatus { IDLE, DETECTING, IN_TUNE }
-
-private data class TunerUiState(
-    val status: TunerStatus,
-    val noteLabel: String,
-    val hz: Double,
-    val cents: Float,
-    val instrumentLabel: String,
-)
-
-// TODO(Fase 2/3): substituir por TunerViewModel observando TunerEngine (:audio-engine).
-private val demoIdleState = TunerUiState(
-    status = TunerStatus.IDLE,
-    noteLabel = "--",
-    hz = 0.0,
-    cents = 0f,
-    instrumentLabel = "Guitarra",
-)
-
 @Composable
-fun TunerScreen(modifier: Modifier = Modifier) {
+fun TunerScreen(
+    modifier: Modifier = Modifier,
+    viewModel: TunerViewModel = viewModel(),
+) {
+    val context = LocalContext.current
+    var hasMicPermission by remember {
+        mutableStateOf(
+            context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED,
+        )
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted -> hasMicPermission = granted }
+
+    LaunchedEffect(Unit) {
+        if (!hasMicPermission) {
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
+    DisposableEffect(hasMicPermission) {
+        if (hasMicPermission) {
+            viewModel.onMicPermissionGranted()
+        }
+        onDispose { viewModel.onScreenStopped() }
+    }
+
     val matrixColors = LocalMatrixColors.current
-    val state = demoIdleState
+    val state by viewModel.uiState.collectAsState()
     val color = when (state.status) {
         TunerStatus.IDLE -> matrixColors.neutral
         TunerStatus.DETECTING -> matrixColors.detecting
@@ -50,6 +70,15 @@ fun TunerScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        if (!hasMicPermission) {
+            Text(
+                text = "Toque para permitir o microfone",
+                style = MaterialTheme.typography.bodyLarge,
+                color = matrixColors.neutral,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
+        }
+
         RadialGauge(
             noteLabel = state.noteLabel,
             cents = state.cents,

@@ -19,6 +19,7 @@ android {
 dependencies {
     implementation(project(":tuning-data"))
     implementation(libs.androidx.core.ktx)
+    implementation(libs.kotlinx.coroutines.android)
 
-    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlin.test.junit)
 }
